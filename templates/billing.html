@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Billing</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <style>
+      .invoice-box {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      }
+      .billing-header {
+        border-bottom: 2px solid #eee;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="container =-fluid p-0">
+      <div class="row g-0 m-0">
+        <div class="col-md-2 bg-dark vh-100">
+          <nav id="sidebar" class="d-none d-md-block">
+            <div class="p-4">
+              
+              <h4 class="fw-bold text-primary">MY STORE</h4>
+            </div>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a href="{{ url_for('index') }}" class="nav-link active">
+                  <i class="bi bi-house-door me-2"></i> Home
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/viewproduct" class="nav-link"
+                  ><i class="bi bi-box-seam me-2"></i> View Products</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/billing" class="nav-link"
+                  ><i class="bi bi-receipt me-2"></i> Billing</a
+                >
+              </li>
+              <li class="nav-item">
+                <a href="/logout" class="nav-link text-danger mt-5"
+                  ><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-md-10 p-4 d-flex justify-content-center">
+          <div class="invoice-box 100" style="max-width: 1000px">
+            <div
+              class="billing-header d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <div class="billing-header row align-items-center mb-4">
+  <div class="col-md-6">
+    <h2 class="fw-bold text-primary mb-1">INVOICE</h2>
+    <p class="text-muted mb-0">Order ID: #INV-9921</p>
+  </div>
+  <div class="col-md-6 text-md-end text-start">
+    <h5 class="fw-bold mb-1">My Shop Inventory</h5>
+    <p class="small text-muted mb-0">123 Market Street, Tamil Nadu</p>
+  </div>
+</div>
+
+                
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <h6 class="fw-bold">Bill To:</h6>
+                <input
+                  type="text"
+                  class="form-control form-control-sm mb-2"
+                  placeholder="Customer Name"
+                />
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Phone Number"
+                />
+              </div>
+              <div class="col-md-6 text-md-end">
+                <h6 class="fw-bold">Date:</h6>
+                <p id="current-date"></p>
+              </div>
+            </div>
+
+            <table class="table table-bordered">
+              <thead class="table-dark">
+                <tr>
+                  <th>Item Name</th>
+                  <th class="text-center">Qty</th>
+                  <th class="text-end">Rate</th>
+                  <th class="text-end">Total</th>
+                </tr>
+              </thead>
+              <tbody id="billing-items"></tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="3" class="text-end">Grand Total:</th>
+                  <th class="text-end text-primary fs-5" id="grand-total">
+                    ₹0.00
+                  </th>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div class="d-flex justify-content-between mt-4">
+              <button
+                class="btn btn-outline-secondary"
+                onclick="window.history.back()"
+              >
+                <i class="bi bi-arrow-left"></i> Edit Cart
+              </button>
+              <div>
+                <button
+                  class="btn btn-info text-white me-2"
+                  onclick="window.print()"
+                >
+                  <i class="bi bi-printer"></i> Print Bill
+                </button>
+                <button class="btn btn-success px-5" onclick="processOrder()">
+                  Pay & Finish
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // LocalStorage-la irundhu data edukurom
+      const cartItems = JSON.parse(localStorage.getItem("myCart")) || [];
+      const itemsTable = document.getElementById("billing-items");
+      let totalAmount = 0;
+
+      // Date set panrom
+      document.getElementById("current-date").innerText =
+        new Date().toLocaleDateString();
+
+      if (cartItems.length === 0) {
+        itemsTable.innerHTML =
+          '<tr><td colspan="4" class="text-center">No items found!</td></tr>';
+      } else {
+        cartItems.forEach((item) => {
+          const total = parseFloat(item.price);
+          totalAmount += total;
+
+          itemsTable.innerHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td class="text-center">1</td>
+                        <td class="text-end">₹${item.price}</td>
+                        <td class="text-end">₹${total}</td>
+                    </tr>
+                `;
+        });
+        document.getElementById("grand-total").innerText =
+          `₹${totalAmount.toFixed(2)}`;
+      }
+      function processOrder() {
+        // 1. Storage-la irukkura cart-ai clear panrom
+        localStorage.removeItem("myCart");
+
+        // 2. Flask route moolama Success page-ku redirect panrom
+        window.location.href = "/order_success";
+      }
+    </script>
+  </body>
+</html>

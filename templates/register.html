@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Registration</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .card-box {
+        width: 450px;
+      }
+      body {
+        background-color: #ffc107;
+      } /* Warning yellow */
+    </style>
+  </head>
+  <body class="d-flex justify-content-center align-items-center min-vh-100">
+    <form method="POST" action="/register">
+      <div class="card bg-dark text-white p-4 rounded-4 shadow-lg card-box">
+        <h3 class="text-center mb-4 text-warning fw-bold">CREATE ACCOUNT</h3>
+
+        <div class="row">
+          <div class="col-md-6">
+            <input
+              type="text"
+              name="fname"
+              class="form-control mb-3"
+              placeholder="First Name"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <input
+              type="text"
+              name="lname"
+              class="form-control mb-3"
+              placeholder="Last Name"
+              required
+            />
+          </div>
+        </div>
+
+        <input
+          type="email"
+          name="email"
+          class="form-control mb-3"
+          placeholder="Email Address"
+          required
+        />
+        <input
+          type="number"
+          name="phone"
+          class="form-control mb-3"
+          placeholder="Phone Number"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          class="form-control mb-4"
+          placeholder="Password"
+          required
+        />
+
+        <button
+          type="submit"
+          class="btn btn-warning w-100 fw-bold rounded-pill"
+        >
+          REGISTER
+        </button>
+
+        <p class="text-center mt-3 small">
+          Already have an account?
+          <a href="/login" class="text-warning text-decoration-none fw-bold"
+            >Login Here</a
+          >
+        </p>
+      </div>
+    </form>
+  </body>
+</html>

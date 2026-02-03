@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container" id="form-container">
+      <div class="card bg-success m-4 p-5" style="max-width: 500px">
+        <h1 class="text-center">FEEDBACK FORM</h1>
+        <form method="POST" action="/save_feedback" id="review">
+          <div class="mb-3">
+            <label class="form-label m-2 w-70">RATING(1-5)</label>
+            <select class="form-select" name="rating" id="ratinginput">
+              <option>5-Excellent</option>
+              <option>4-Good</option>
+              <option>3-Average</option>
+              <option>2-Poor</option>
+              <option>1-Terrible</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">DESCRIPTION</label>
+            <textarea
+              class="form-control text-dark"
+              rows="3"
+              name="description"
+              id="descinput"
+              placeholder="Tell Us About Our Service........."
+              required
+            >
+            </textarea>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">SUBMIT</button>
+        </form>
+      </div>
+    </div>
+
+    <div
+      class="container mt-4 p-5 d-none d-flex"
+      id="result-container"
+      style="max-width: 500px"
+    >
+      <div
+        class="card d-flex bg-success mt-4 mb-3 justify-content-between align-items-center"
+      >
+        <h3 class="text-dark mt-2">YOUR FEEDBACK</h3>
+        <button class="btn btn-outline-dark" id="editBtn">EDIT</button>
+        <hr />
+        <p class="mb-2">
+          <strong>RATING:</strong><span id="showrating"></span>
+        </p>
+        <p><strong>Description:</strong> <span id="descmsg"></span></p>
+      </div>
+      <p class="text-center text-dark m-3">Thank you for your feedback!!!!!</p>
+    </div>
+    <script>
+      const reviewform = document.getElementById("review");
+      const formcontainer = document.getElementById("form-container");
+      const resultdiv = document.getElementById("result-container");
+      const editBtn = document.getElementById("editBtn");
+
+      reviewform.onsubmit = async (e) => {
+        e.preventDefault(); // Page refresh aagadhu
+
+        // 1. Database-ku data anupuroom
+        const formData = new FormData(reviewform);
+        const response = await fetch("/save_feedback", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          // 2. Success aana mattum result-ah kaatu
+          document.getElementById("showrating").innerText =
+            document.getElementById("ratinginput").value;
+          document.getElementById("descmsg").innerText =
+            document.getElementById("descinput").value;
+
+          formcontainer.classList.add("d-none");
+          resultdiv.classList.remove("d-none");
+          resultdiv.classList.add("d-block");
+        }
+      };
+
+      editBtn.onclick = () => {
+        resultdiv.classList.add("d-none");
+        resultdiv.classList.remove("d-block");
+        formcontainer.classList.remove("d-none");
+      };
+    </script>
+  </body>
+</html>
