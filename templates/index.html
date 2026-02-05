@@ -75,11 +75,7 @@
             ><i class="bi bi-receipt me-2"></i> Billing</a
           >
         </li>
-         <li class="nav-item">
-          <a href="/review" class="nav-link"
-            ><i class="bi bi-receipt me-2"></i> Feedback</a
-          >
-        </li>
+     
         <li class="nav-item">
           <a href="/logout" class="nav-link text-danger mt-5"
             ><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a
@@ -146,6 +142,9 @@
                 >
                   Add to Cart
                 </button>
+                <a href="{{ url_for('review_page', pid=product.id) }}" class="btn btn-success m-3">
+    FEEDBACK
+</a>
               </div>
             </div>
           </div>

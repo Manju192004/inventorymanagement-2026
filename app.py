@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
 from werkzeug.utils import secure_filename
+from flask import jsonify
 import mysql.connector
 
 app = Flask(__name__)
@@ -34,10 +35,11 @@ def login_page():
         user = cursor.fetchone()
         cursor.close()
         conn.close()
-
         if user:
             session['user'] = user['Email']
+            session['user_id'] = user['id']  # Intha line romba mukkiyam!
             session['role'] = user.get('Role', 'User')
+
 
             if session['role'] == 'Admin':
                 return redirect(url_for('viewproduct'))
@@ -81,19 +83,30 @@ def viewproduct():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     
-    # Products edukkuroom
+    # 1. Products-ah eppovum pola edukkuroom
     cursor.execute("SELECT * FROM product")
     products = cursor.fetchall()
     
-    # Feedbacks edukkuroom (Pudhu lines)
-    cursor.execute("SELECT * FROM feedback ORDER BY id DESC")
+    # 2. Feedbacks edukkuroom (JOIN use panni Names-ah edukkuroom)
+    # feedback table-la irukra user_id vechi content table-la irukra Name-ah link panrom
+    # feedback table-la irukra product_id vechi product table-la irukra product_name-ah link panrom
+    sql = """
+        SELECT f.*, c.Name as user_name, p.product_name 
+        FROM feedback f
+        LEFT JOIN content c ON f.user_id = c.id
+        LEFT JOIN product p ON f.product_id = p.id
+        ORDER BY f.id DESC
+    """
+    cursor.execute(sql)
     feedbacks = cursor.fetchall()
     
     cursor.close()
     conn.close()
     
-    # Rendu data-vaiyum HTML-ku anupuroom
     return render_template("viewproduct.html", products=products, feedbacks=feedbacks)
+
+
+
 
 @app.route('/addproducts')
 def addproducts():
@@ -183,27 +196,57 @@ def cart(pid=None):
 def billing():
     return render_template('billing.html')
 
-@app.route('/review') # User intha URL-ku thaan povaanga
-def review_page():
-    return render_template('feedback.html') # Unga file peyar sariyaa irukanum
 
+# Intha mari maathunga
+@app.route('/review')
+@app.route('/review/<int:pid>')
+def review_page(pid=None):
+    # Sidebar-la irunthu vantha pid None-ah irukkum, card-la irunthu vantha ID irukkum
+    return render_template('feedback.html', product_id=pid)
 
 
 @app.route('/save_feedback', methods=['POST'])
 def save_feedback():
-    rating = request.form.get('rating')
-    description = request.form.get('description')
+    try:
+        # 1. HTML Form-la irundhu data-vai edukkurom
+        pid = request.form.get('product_id')
+        rating = request.form.get('rating')
+        description = request.form.get('description')
+        
+        # 2. Login-la save panna user_id-ah inga edukkurom
+        uid = session.get('user_id')
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    sql = "INSERT INTO feedback (rating, description) VALUES (%s, %s)"
-    cursor.execute(sql, (rating, description))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-    # JavaScript-ku success message anupuroom
-    return {"status": "success"}
+        # User login pannala na error kaatum
+        if not uid:
+            return jsonify({"status": "error", "message": "User not logged in! Please login first."})
+
+        # 3. Sidebar vazhiyaa vandha product_id empty-ah irukkum
+        # MySQL-la integer column-ku empty string set aagathu, so None (NULL) nu maathuroom
+        if pid == '' or pid == 'None' or pid is None:
+            final_pid = None
+        else:
+            final_pid = int(pid)
+
+        # 4. Database-la save panrom
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Inga uid kattiyaayam pass pannanum (appo thaan yar feedback nu store aagum)
+        sql = "INSERT INTO feedback (product_id, user_id, rating, description) VALUES (%s, %s, %s, %s)"
+        cursor.execute(sql, (final_pid, uid, rating, description))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({"status": "success", "message": "Feedback saved successfully!"})
+
+    except Exception as e:
+        print(f"Error: {str(e)}") # Terminal-la error-ah check panna
+        return jsonify({"status": "error", "message": str(e)})
+
+
+
 
 
 @app.route('/logout')
