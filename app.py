@@ -10,12 +10,11 @@ app.secret_key = "secret_key_123"
 
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
+        host="127.0.0.1",
         user="root",
         password="root",
         database="homedb"
     )
-
 
 
 @app.route('/')
@@ -50,12 +49,16 @@ def login_page():
             
     return render_template("login.html")
 
+@app.route('/register')
+def register_page():
+    return render_template("register.html")
+
 @app.route('/register', methods=['POST'])
 def register_logic():
     fname = request.form.get('fname')
     lname = request.form.get('lname')
     email = request.form.get('email')
-    #phone = request.form.get('phone')
+    phone = request.form.get('phone')
     password = request.form.get('password')
     
     full_name = f"{fname} {lname}"
@@ -65,7 +68,7 @@ def register_logic():
     cursor = conn.cursor()
     try:
         sql = "INSERT INTO content (Name, Email, Password, Phone, Role) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql, (full_name, email, password, role))
+        cursor.execute(sql, (full_name, email, password,phone, role))
         conn.commit()
         return redirect(url_for('login_page'))
     except Exception as e:
@@ -114,6 +117,8 @@ def addproducts():
 
 @app.route('/save_product', methods=['POST'])
 def save_product():
+
+
     product_name = request.form.get('product_name')
     category = request.form.get('category')
     price = request.form.get('price')
@@ -246,13 +251,13 @@ def save_feedback():
         return jsonify({"status": "error", "message": str(e)})
 
 
-
-
-
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login_page'))
 
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
+    
