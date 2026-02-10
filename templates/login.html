@@ -59,5 +59,25 @@
         </div>
       </form>
     </div>
+    <script>
+      function handleLogin(event) {
+        event.preventDefault();
+
+        let email = document.getElementById("email").value;
+
+        // 1. User-a save pannurom (Cart logic-kaga)
+        localStorage.setItem("currentUser", email);
+
+        // 2. Admin logic: Email-a check pandroom
+        // Unga admin email "admin@gmail.com" nu vachikitta:
+        if (email === "admin@gmail.com") {
+          console.log("Admin Logged In");
+          window.location.href = "/viewproduct"; // Admin-ukkana page
+        } else {
+          console.log("Normal User Logged In");
+          window.location.href = "/index"; // Normal user-ukkana page
+        }
+      }
+    </script>
   </body>
 </html>

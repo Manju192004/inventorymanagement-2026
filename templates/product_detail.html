@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ product.product_name }} - Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <style>
+      /* Custom Styles for a Neater Header */
+      .navbar {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      .search-container .input-group {
+        background-color: #f1f4f6;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid transparent;
+        transition: all 0.3s ease;
+      }
+      .search-container .input-group:focus-within {
+        border-color: #0c831f;
+        background-color: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(12, 131, 31, 0.1);
+      }
+      .brand-logo {
+        font-size: 1.8rem;
+        letter-spacing: -1px;
+        color: #0c831f !important;
+      }
+      .cart-btn {
+        background-color: #0c831f !important;
+        border: none;
+        transition: transform 0.2s ease;
+      }
+      .cart-btn:hover {
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg sticky-top py-3 mb-5">
+      <div class="container">
+        <a class="navbar-brand fw-bolder brand-logo me-4" href="/index"
+          >MYSHOP</a
+        >
+
+        <div class="flex-grow-1 mx-lg-5 search-container d-none d-md-block">
+          <div class="input-group">
+            <span class="input-group-text bg-transparent border-0"
+              ><i class="bi bi-search text-muted"></i
+            ></span>
+            <input
+              type="text"
+              class="form-control bg-transparent border-0 py-2"
+              placeholder='Search for "milk", "bread" or "fruits"...'
+            />
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <a
+            href="/index"
+            class="nav-link fw-bold text-dark me-4 d-none d-lg-block"
+            >Shop</a
+          >
+
+          <button
+            class="btn btn-success cart-btn d-flex align-items-center px-3 py-2 rounded-3"
+            onclick="location.href = '/cart'"
+          >
+            <i class="bi bi-cart3 fs-5 me-2"></i>
+            <div class="text-start border-start ps-2 ms-2">
+              <div
+                class="fw-bold lh-1 small text-uppercase"
+                style="font-size: 0.7rem"
+              >
+                My Cart
+              </div>
+              <div
+                class="fw-bold lh-1"
+                id="cart-count"
+                style="font-size: 0.9rem"
+              >
+                0 Items
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="container py-2">
+      <a href="/index" class="btn btn-sm btn-outline-secondary mb-4 border-0">
+        <i class="bi bi-arrow-left"></i> Back to products
+      </a>
+
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+          <div
+            class="card border-0 shadow-sm p-4 rounded-4 text-center bg-white h-100 d-flex align-items-center justify-content-center"
+          >
+            <img
+              src="/static/uploads/{{ product.image }}"
+              class="img-fluid rounded-3"
+              style="max-height: 400px; object-fit: contain"
+              alt="{{ product.product_name }}"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-5">
+          <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100">
+            <span
+              class="badge bg-light text-success fw-bold align-self-start mb-2 px-3 py-2 rounded-pill border"
+              >In Stock</span
+            >
+            <h2 class="fw-bold">{{ product.product_name }}</h2>
+            <h3 class="text-primary fw-bold mb-3">₹{{ product.price }}</h3>
+            <p class="text-muted small">
+              Available Stock:
+              <span class="fw-bold text-dark"
+                >{{ product.quantity }} units</span
+              >
+            </p>
+            <hr class="text-muted opacity-25" />
+
+            <button
+              class="btn btn-success btn-lg w-100 py-3 mb-4 rounded-3 fw-bold shadow-sm cart-btn"
+              onclick="addToCart('{{ product.product_name }}', '{{ product.price }}', '{{ product.image }}')"
+            >
+              <i class="bi bi-cart-plus me-2"></i> Add to Cart
+            </button>
+
+            <h5
+              class="fw-bold mb-3 small text-uppercase text-muted tracking-wide"
+            >
+              <i class="bi bi-chat-left-text me-2"></i>Give Your Feedback
+            </h5>
+            <form action="/submit_feedback/{{ product.id }}" method="POST">
+              <textarea
+                name="description"
+                class="form-control bg-light border-0 mb-3 rounded-3"
+                rows="3"
+                placeholder="How's this product?"
+                required
+              ></textarea>
+              <button
+                type="submit"
+                class="btn btn-primary w-100 rounded-3 py-2 fw-bold"
+              >
+                Submit Review
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-5 justify-content-center">
+        <div class="col-md-10">
+          <h4 class="fw-bold mb-4">Customer Reviews</h4>
+          {% if feedbacks %} {% for fb in feedbacks %}
+          <div class="card border-0 shadow-sm mb-3 rounded-3">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-2">
+                <div
+                  class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold"
+                  style="width: 35px; height: 35px; font-size: 0.8rem"
+                >
+                  {{ fb.Name[0] | upper }}
+                </div>
+                <h6 class="mb-0 fw-bold">{{ fb.Name }}</h6>
+              </div>
+              <p class="mb-1 text-secondary ms-5 italic small">
+                "{{ fb.description }}"
+              </p>
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <div class="alert alert-light text-center border rounded-3 py-4">
+            No reviews yet. Be the first to review!
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function updateHeaderCart() {
+        let user = "{{ session['user'] }}" || "guest";
+        let cartKey = "myCart_" + user;
+        let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+        let totalItems = cart.length;
+        document.getElementById("cart-count").innerText = totalItems + " Items";
+      }
+
+      function addToCart(name, price, img) {
+        let user = "{{ session['user'] }}" || "guest";
+        let cartKey = "myCart_" + user;
+        let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+        cart.push({ name: name, price: price, img: img, qty: 1 });
+        localStorage.setItem(cartKey, JSON.stringify(cart));
+        updateHeaderCart();
+        // Using a nicer toast/alert would be better, but keeping your logic:
+        alert(name + " added to cart!");
+      }
+
+      window.onload = updateHeaderCart;
+    </script>
+  </body>
+</html>

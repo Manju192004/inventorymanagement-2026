@@ -13,18 +13,49 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
     />
     <style>
+      body {
+        background-color: #f8f9fa;
+        padding-bottom: 100px;
+      } /* Space for footer */
       .cart-img {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
         object-fit: cover;
-        border-radius: 8px;
+        border-radius: 12px;
+      }
+
+      /* Floating Bottom Checkout Bar */
+      .checkout-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+        padding: 15px 0;
+        z-index: 1000;
+        border-top: 1px solid #eee;
+      }
+      .btn-buy {
+        background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+      .btn-buy:hover {
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
       }
     </style>
   </head>
-  <body class="bg-light">
+  <body>
     <nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
       <div class="container">
-        <a href="/" class="text-white text-decoration-none">
+        <a href="/index" class="text-white text-decoration-none">
           <i class="bi bi-arrow-left me-2"></i>Back to Shop
         </a>
         <span class="navbar-brand mb-0 h1 mx-auto">My Cart Items</span>
@@ -36,140 +67,127 @@
         <div class="col-md-8">
           <div id="cart-list"></div>
 
-          <div id="cart-footer" class="card p-3 mt-3 shadow-sm d-none">
-            <div class="d-flex justify-content-between align-items-center">
-              <h5 class="mb-0 fw-bold">Grand Total:</h5>
-              <h5 class="mb-0 text-primary fw-bold" id="grand-total">₹0.00</h5>
-            </div>
-            <button
-              class="btn btn-primary w-100 mt-3 fw-bold"
-              onclick="goToBilling()"
-            >
-              Confirm Order
-            </button>
-          </div>
-
           <div id="empty-msg" class="text-center mt-5 d-none">
             <i class="bi bi-cart-x fs-1 text-muted"></i>
             <p class="mt-3">Your cart is empty!</p>
-            <a href="/" class="btn btn-primary">Go Shopping</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div
-          id="cartToast"
-          class="toast align-items-center text-white border-0"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-        >
-          <div class="d-flex">
-            <div class="toast-body">
-              <i class="bi bi-info-circle me-2"></i>
-              <span id="toast-msg">Action Successful!</span>
-            </div>
-            <button
-              type="button"
-              class="btn-close btn-close-white me-2 m-auto"
-              data-bs-dismiss="toast"
-              aria-label="Close"
-            ></button>
+            <a href="/index" class="btn btn-primary rounded-pill px-4"
+              >Go Shopping</a
+            >
           </div>
         </div>
       </div>
     </div>
 
+    <div id="checkout-bar" class="checkout-footer d-none">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="text-muted mb-0 small text-uppercase fw-bold">
+              Total Amount
+            </p>
+            <h4 class="mb-0 fw-bold text-dark" id="grand-total">₹0.00</h4>
+          </div>
+          <button class="btn btn-buy shadow-sm" onclick="checkoutAll()">
+            Buy All Items <i class="bi bi-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      let cartItems = JSON.parse(localStorage.getItem("myCart")) || [];
-      const listDiv = document.getElementById("cart-list");
-      const emptyMsg = document.getElementById("empty-msg");
-      const cartFooter = document.getElementById("cart-footer");
+      let user = "{{ session['user'] }}" || "guest";
+      let cartKey = "myCart_" + user;
+      let cartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
 
       function renderCart() {
-        listDiv.innerHTML = "";
+        const listDiv = document.getElementById("cart-list");
+        const emptyMsg = document.getElementById("empty-msg");
+        const checkoutBar = document.getElementById("checkout-bar");
         let total = 0;
+
+        listDiv.innerHTML = "";
 
         if (cartItems.length === 0) {
           emptyMsg.classList.remove("d-none");
-          cartFooter.classList.add("d-none");
+          checkoutBar.classList.add("d-none");
         } else {
           emptyMsg.classList.add("d-none");
-          cartFooter.classList.remove("d-none");
+          checkoutBar.classList.remove("d-none");
 
           cartItems.forEach((item, index) => {
+            // Quantity check - default 1 if not exists
             if (!item.qty) item.qty = 1;
 
-            // Image handling: supports both 'img' or 'image' keys from localStorage
-            let imgFile = item.img || item.image || "default.jpg";
-            let itemTotal = parseFloat(item.price) * item.qty;
-            total += itemTotal;
+            let qty = parseInt(item.qty);
+            let unitPrice = parseFloat(item.price);
+            let itemSubtotal = unitPrice * qty;
+            total += itemSubtotal;
 
             listDiv.innerHTML += `
-              <div class="card mb-3 shadow-sm border-0 rounded-3">
-                <div class="card-body p-3">
-                  <div class="row align-items-center">
-                    <div class="col-3 col-md-2 text-center">
-                      <img src="/static/uploads/${imgFile}" class="cart-img" onerror="this.src='/static/uploads/default.jpg'">
-                    </div>
-                    <div class="col-9 col-md-4">
-                      <h6 class="mb-0 fw-bold">${item.name}</h6>
-                      <p class="text-primary mb-0 fw-bold">₹${item.price}</p>
-                    </div>
-                    <div class="col-6 col-md-3 mt-2 mt-md-0">
-                      <div class="input-group input-group-sm" style="max-width: 120px;">
-                        <button class="btn btn-outline-secondary" onclick="updateQty(${index}, -1)">-</button>
-                        <input type="text" class="form-control text-center bg-white" value="${item.qty}" readonly>
-                        <button class="btn btn-outline-secondary" onclick="updateQty(${index}, 1)">+</button>
+                <div class="card mb-3 shadow-sm border-0 rounded-4 overflow-hidden">
+                  <div class="card-body p-3">
+                    <div class="row align-items-center">
+                      <div class="col-3 col-md-2 text-center">
+                        <img src="/static/uploads/${item.img || "default.jpg"}" class="cart-img" onerror="this.src='/static/uploads/default.jpg'">
+                      </div>
+                      <div class="col-5 col-md-6">
+                        <h6 class="mb-1 fw-bold text-dark">${item.name}</h6>
+                        <p class="text-muted mb-0 small">Unit Price: ₹${unitPrice.toFixed(2)}</p>
+                        <p class="text-primary mb-0 fw-bold">Subtotal: ₹${itemSubtotal.toFixed(2)}</p>
+                      </div>
+                      <div class="col-4 col-md-4 text-end">
+                        <div class="d-flex align-items-center justify-content-end mb-2">
+                           <button class="btn btn-sm btn-light border rounded-circle" onclick="updateQty(${index}, -1)"><i class="bi bi-dash"></i></button>
+                           <span class="mx-3 fw-bold">${qty}</span>
+                           <button class="btn btn-sm btn-light border rounded-circle" onclick="updateQty(${index}, 1)"><i class="bi bi-plus"></i></button>
+                        </div>
+                        <button class="btn btn-sm text-danger p-0 border-0 bg-transparent small" onclick="handleRemove(${index})">
+                          <i class="bi bi-trash"></i> Remove
+                        </button>
                       </div>
                     </div>
-                    <div class="col-6 col-md-3 text-end">
-                      <p class="mb-0 fw-bold text-dark">₹${itemTotal.toFixed(2)}</p>
-                      <button class="btn btn-sm text-danger p-0" onclick="handleRemove(${index})">Remove</button>
-                    </div>
                   </div>
-                </div>
-              </div>
-            `;
+                </div>`;
           });
-          document.getElementById("grand-total").innerText =
-            "₹" + total.toFixed(2);
         }
+        document.getElementById("grand-total").innerText =
+          "₹" + total.toFixed(2);
       }
 
       function updateQty(index, change) {
-        if (cartItems[index].qty + change >= 1) {
-          cartItems[index].qty += change;
-          localStorage.setItem("myCart", JSON.stringify(cartItems));
+        let currentQty = parseInt(cartItems[index].qty || 1);
+        let newQty = currentQty + change;
+
+        if (newQty >= 1) {
+          cartItems[index].qty = newQty;
+
+          // LocalStorage and SessionStorage sync
+          localStorage.setItem(cartKey, JSON.stringify(cartItems));
+          sessionStorage.setItem("checkoutCart", JSON.stringify(cartItems));
+
           renderCart();
-          showToast("Quantity updated!", "bg-primary");
         }
       }
 
       function handleRemove(index) {
-        let itemName = cartItems[index].name;
-        cartItems.splice(index, 1);
-        localStorage.setItem("myCart", JSON.stringify(cartItems));
-        renderCart();
-        showToast(itemName + " removed from cart!", "bg-danger");
+        if (confirm("Are you sure you want to remove this item?")) {
+          cartItems.splice(index, 1);
+          localStorage.setItem(cartKey, JSON.stringify(cartItems));
+          sessionStorage.setItem("checkoutCart", JSON.stringify(cartItems));
+          renderCart();
+        }
       }
 
-      function showToast(message, colorClass) {
-        const toastEl = document.getElementById("cartToast");
-        const toastMsg = document.getElementById("toast-msg");
-        toastMsg.innerText = message;
-        toastEl.className = `toast align-items-center text-white border-0 ${colorClass}`;
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
+      function checkoutAll() {
+        if (cartItems.length > 0) {
+          // MUKKIYAM: Final-ah oru thadava data-vai urudhi seithu billing-ku porom
+          sessionStorage.setItem("checkoutCart", JSON.stringify(cartItems));
+          sessionStorage.removeItem("checkoutItem");
+          window.location.href = "/billing";
+        }
       }
 
-      function goToBilling() {
-        window.location.href = "/billing";
-      }
-
-      renderCart();
+      window.onload = renderCart;
     </script>
   </body>
 </html>

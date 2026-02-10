@@ -19,165 +19,218 @@
         border-radius: 10px;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       }
-      .billing-header {
-        border-bottom: 2px solid #eee;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
+      .payment-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
       }
     </style>
   </head>
   <body class="bg-light">
-    <div class="container =-fluid p-0">
-      <div class="row g-0 m-0">
-        <div class="col-md-2 bg-dark vh-100">
-          <nav id="sidebar" class="d-none d-md-block">
-            <div class="p-4">
-              
-              <h4 class="fw-bold text-primary">MY STORE</h4>
+    <div
+      class="container-fluid min-vh-100 d-flex justify-content-center align-items-center py-4"
+    >
+      <div class="col-11 col-md-10 col-lg-8">
+        <div class="invoice-box">
+          <div class="row mb-4 border-bottom pb-3">
+            <div class="col-6">
+              <h2 class="fw-bold text-primary mb-0">INVOICE</h2>
+              <small class="text-muted" id="order-id">#INV-0000</small>
             </div>
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a href="{{ url_for('index') }}" class="nav-link active">
-                  <i class="bi bi-house-door me-2"></i> Home
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="/viewproduct" class="nav-link"
-                  ><i class="bi bi-box-seam me-2"></i> View Products</a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="/billing" class="nav-link"
-                  ><i class="bi bi-receipt me-2"></i> Billing</a
-                >
-              </li>
-              <li class="nav-item">
-                <a href="/logout" class="nav-link text-danger mt-5"
-                  ><i class="bi bi-box-arrow-right me-2"></i> Sign Out</a
-                >
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div class="col-md-10 p-4 d-flex justify-content-center">
-          <div class="invoice-box 100" style="max-width: 1000px">
-            <div
-              class="billing-header d-flex justify-content-between align-items-center"
-            >
-              <div>
-                <div class="billing-header row align-items-center mb-4">
-  <div class="col-md-6">
-    <h2 class="fw-bold text-primary mb-1">INVOICE</h2>
-    <p class="text-muted mb-0">Order ID: #INV-9921</p>
-  </div>
-  <div class="col-md-6 text-md-end text-start">
-    <h5 class="fw-bold mb-1">My Shop Inventory</h5>
-    <p class="small text-muted mb-0">123 Market Street, Tamil Nadu</p>
-  </div>
-</div>
+            <div class="col-6 text-end">
+              <h5 class="fw-bold mb-0">My Shop Name</h5>
+              <p class="small text-muted mb-0">
+                123, Main Bazaar Street,<br />Tirunelveli, Tamil Nadu
+              </p>
+              <p id="current-date" class="small text-muted mb-0 pt-1"></p>
+            </div>
+          </div>
 
-                
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6 class="fw-bold">Customer Info:</h6>
+              <input
+                type="text"
+                id="cust-name"
+                class="form-control form-control-sm mb-2"
+                placeholder="Full Name"
+                required
+              />
+              <textarea
+                id="cust-address"
+                class="form-control form-control-sm"
+                rows="2"
+                placeholder="Delivery Address"
+                required
+              ></textarea>
+            </div>
+          </div>
 
-            <div class="row mb-4">
+          <table class="table table-bordered mb-4">
+            <thead class="table-dark">
+              <tr>
+                <th>Item</th>
+                <th class="text-center">Qty</th>
+                <th class="text-end">Price</th>
+                <th class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody id="billing-items"></tbody>
+            <tfoot>
+              <tr>
+                <th colspan="3" class="text-end">Grand Total:</th>
+                <th class="text-end text-primary fs-5" id="grand-total">
+                  ₹0.00
+                </th>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="payment-section mb-4">
+            <h6 class="fw-bold mb-3">
+              <i class="bi bi-credit-card-2-back me-2"></i>Payment Details
+            </h6>
+            <div class="row g-3">
               <div class="col-md-6">
-                <h6 class="fw-bold">Bill To:</h6>
-                <input
-                  type="text"
-                  class="form-control form-control-sm mb-2"
-                  placeholder="Customer Name"
-                />
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  placeholder="Phone Number"
-                />
-              </div>
-              <div class="col-md-6 text-md-end">
-                <h6 class="fw-bold">Date:</h6>
-                <p id="current-date"></p>
-              </div>
-            </div>
-
-            <table class="table table-bordered">
-              <thead class="table-dark">
-                <tr>
-                  <th>Item Name</th>
-                  <th class="text-center">Qty</th>
-                  <th class="text-end">Rate</th>
-                  <th class="text-end">Total</th>
-                </tr>
-              </thead>
-              <tbody id="billing-items"></tbody>
-              <tfoot>
-                <tr>
-                  <th colspan="3" class="text-end">Grand Total:</th>
-                  <th class="text-end text-primary fs-5" id="grand-total">
-                    ₹0.00
-                  </th>
-                </tr>
-              </tfoot>
-            </table>
-
-            <div class="d-flex justify-content-between mt-4">
-              <button
-                class="btn btn-outline-secondary"
-                onclick="window.history.back()"
-              >
-                <i class="bi bi-arrow-left"></i> Edit Cart
-              </button>
-              <div>
-                <button
-                  class="btn btn-info text-white me-2"
-                  onclick="window.print()"
+                <label class="small fw-bold">Payment Method</label>
+                <select
+                  class="form-select form-select-sm"
+                  id="pay-method"
+                  onchange="togglePaymentInputs()"
                 >
-                  <i class="bi bi-printer"></i> Print Bill
-                </button>
-                <button class="btn btn-success px-5" onclick="processOrder()">
-                  Pay & Finish
-                </button>
+                  <option value="Cash">Cash on Delivery</option>
+                  <option value="GPay">UPI / GPay</option>
+                </select>
+              </div>
+              <div class="col-md-6" id="cash-div">
+                <label class="small fw-bold">Amount to Pay</label>
+                <input
+                  type="text"
+                  id="cash-amount"
+                  class="form-control form-control-sm"
+                  readonly
+                />
               </div>
             </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <button
+              class="btn btn-outline-secondary"
+              onclick="window.history.back()"
+            >
+              Back
+            </button>
+            <button
+              class="btn btn-success px-5 fw-bold"
+              onclick="processOrder()"
+            >
+              PAY & FINISH
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      // LocalStorage-la irundhu data edukurom
-      const cartItems = JSON.parse(localStorage.getItem("myCart")) || [];
-      const itemsTable = document.getElementById("billing-items");
-      let totalAmount = 0;
+      // 1. Cart-la irunthu motha list-aiyum edukkirom ('checkoutCart')
+      const checkoutCart = JSON.parse(sessionStorage.getItem("checkoutCart"));
+      // Oru vaelai single item "Buy Now" panniruntha adhaiyum handle panna:
+      const singleItem = JSON.parse(sessionStorage.getItem("checkoutItem"));
 
-      // Date set panrom
-      document.getElementById("current-date").innerText =
-        new Date().toLocaleDateString();
-
-      if (cartItems.length === 0) {
-        itemsTable.innerHTML =
-          '<tr><td colspan="4" class="text-center">No items found!</td></tr>';
-      } else {
-        cartItems.forEach((item) => {
-          const total = parseFloat(item.price);
-          totalAmount += total;
-
-          itemsTable.innerHTML += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td class="text-center">1</td>
-                        <td class="text-end">₹${item.price}</td>
-                        <td class="text-end">₹${total}</td>
-                    </tr>
-                `;
-        });
-        document.getElementById("grand-total").innerText =
-          `₹${totalAmount.toFixed(2)}`;
+      // Rendil ethu irukko adhai 'itemsToDisplay' list-ah maathikkurom
+      let itemsToDisplay = [];
+      if (checkoutCart && checkoutCart.length > 0) {
+        itemsToDisplay = checkoutCart;
+      } else if (singleItem) {
+        itemsToDisplay = [singleItem];
       }
-      function processOrder() {
-        // 1. Storage-la irukkura cart-ai clear panrom
-        localStorage.removeItem("myCart");
 
-        // 2. Flask route moolama Success page-ku redirect panrom
-        window.location.href = "/order_success";
+      window.onload = function () {
+        document.getElementById("current-date").innerText =
+          new Date().toLocaleDateString();
+        document.getElementById("order-id").innerText =
+          "#INV-" + Math.floor(1000 + Math.random() * 9000);
+        loadItems();
+      };
+
+      function loadItems() {
+        const billingTable = document.getElementById("billing-items");
+        if (itemsToDisplay.length === 0) {
+          billingTable.innerHTML =
+            '<tr><td colspan="4" class="text-center text-danger">No items selected!</td></tr>';
+          return;
+        }
+
+        let grandTotal = 0;
+        billingTable.innerHTML = ""; // Pazhaya data-vai clear pannavum
+
+        // 2. Loop panni ella items-aiyum table-la podurom
+        itemsToDisplay.forEach((item) => {
+          let qty = item.qty || 1;
+          let itemPrice = parseFloat(item.price);
+          let itemTotal = itemPrice * qty;
+          grandTotal += itemTotal;
+
+          billingTable.innerHTML += `
+                <tr>
+                    <td>${item.name}</td>
+                    <td class="text-center">${qty}</td>
+                    <td class="text-end">₹${itemPrice.toFixed(2)}</td>
+                    <td class="text-end">₹${itemTotal.toFixed(2)}</td>
+                </tr>`;
+        });
+
+        // 3. Grand total-ai update panrom
+        document.getElementById("grand-total").innerText =
+          "₹" + grandTotal.toFixed(2);
+        document.getElementById("cash-amount").value =
+          "₹" + grandTotal.toFixed(2);
+      }
+
+      function processOrder() {
+        const custName = document.getElementById("cust-name").value;
+        const orderId = document.getElementById("order-id").innerText;
+        const totalAmount = document
+          .getElementById("grand-total")
+          .innerText.replace("₹", "");
+
+        if (!custName) {
+          alert("Please enter customer name");
+          return;
+        }
+
+        // Loop panni items-ai edukkirom
+        itemsToDisplay.forEach((item) => {
+          const orderData = {
+            order_id: orderId,
+            item_name: item.name,
+            qty: item.qty || 1,
+            total_price: parseFloat(item.price) * (item.qty || 1),
+          };
+
+          // Flask backend-ukku data anuppukirom
+          fetch("/place_order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderData),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                console.log("Item saved!");
+              }
+            });
+        });
+
+        // Cart-ai clear panni redirect seiyavum
+        let user = "{{ session['user'] }}" || "guest";
+        localStorage.removeItem("myCart_" + user);
+        sessionStorage.removeItem("checkoutCart");
+
+        alert("Order Placed Successfully!");
+        window.location.href = "/success";
       }
     </script>
   </body>
