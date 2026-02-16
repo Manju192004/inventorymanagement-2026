@@ -80,7 +80,6 @@
               >
                 Purchased Items
               </h6>
-
               <div id="items-list-container"></div>
 
               <div class="mt-4 pt-3 border-top">
@@ -89,8 +88,8 @@
                 >
                   <span class="text-muted fw-bold">Payment Method:</span>
                   <span
-                    class="badge bg-info text-dark"
-                    id="s-method text-uppercase"
+                    class="badge bg-info text-dark text-uppercase"
+                    id="s-method"
                     >CASH</span
                   >
                 </div>
@@ -122,11 +121,7 @@
 
     <script>
       window.onload = function () {
-        // --- 1. Clear Cart First ---
-        let user = "{{ session['user'] }}" || "guest";
-        localStorage.removeItem("myCart_" + user);
-
-        // --- 2. Load and Display Data ---
+        // 1. Data-vai sessionStorage-la irundhu edukkavum
         const data = JSON.parse(sessionStorage.getItem("lastOrder"));
 
         if (data && data.items) {
@@ -134,16 +129,14 @@
           document.getElementById("s-name").innerText = data.name;
           document.getElementById("s-total").innerText = "₹" + data.total;
 
-          // Payment method handling
-          const methodElement = document.getElementById("s-method") || {
-            innerText: "",
-          };
-          methodElement.innerText = data.method || "Cash";
+          const methodElement = document.getElementById("s-method");
+          if (methodElement) {
+            methodElement.innerText = data.method || "CASH";
+          }
 
           const container = document.getElementById("items-list-container");
-          container.innerHTML = ""; // Clear existing
+          container.innerHTML = "";
 
-          // Loop and display items vertically
           data.items.forEach((item) => {
             let qty = item.qty || 1;
             let price = parseFloat(item.price) || 0;
@@ -156,15 +149,15 @@
                     <div class="fw-bold text-dark">${item.name}</div>
                     <small class="text-muted">Rate: ₹${price.toFixed(2)} | Qty: ${qty}</small>
                   </div>
-                  <div class="text-end fw-bold">
-                    ₹${subtotal.toFixed(2)}
-                  </div>
+                  <div class="text-end fw-bold">₹${subtotal.toFixed(2)}</div>
                 </div>
-              </div>
-            `;
+              </div>`;
           });
+
+          // 2. Display panna piragu cart-ai clear pannavum
+          let user = "{{ session['user'] }}" || "guest";
+          localStorage.removeItem("myCart_" + user);
         } else {
-          // No data found error
           document.getElementById("items-list-container").innerHTML =
             `<div class="alert alert-warning text-center">No recent order details found.</div>`;
         }

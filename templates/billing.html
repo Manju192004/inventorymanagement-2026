@@ -195,13 +195,26 @@
         const totalAmount = document
           .getElementById("grand-total")
           .innerText.replace("₹", "");
+        const payMethod = document.getElementById("pay-method").value; // Payment method edukkavum
 
         if (!custName) {
           alert("Please enter customer name");
           return;
         }
 
-        // Loop panni items-ai edukkirom
+        // --- MUKKIYAM: Success Page-kkaga data-vai prepare pannunga ---
+        const lastOrderData = {
+          orderId: orderId,
+          name: custName,
+          total: totalAmount,
+          method: payMethod,
+          items: itemsToDisplay, // Ippo table-la irukura ella items-um inga varum
+        };
+
+        // Data-vai save pannunga
+        sessionStorage.setItem("lastOrder", JSON.stringify(lastOrderData));
+
+        // Flask backend-ukku data anuppuvadhai thodarung...
         itemsToDisplay.forEach((item) => {
           const orderData = {
             order_id: orderId,
@@ -210,18 +223,11 @@
             total_price: parseFloat(item.price) * (item.qty || 1),
           };
 
-          // Flask backend-ukku data anuppukirom
           fetch("/place_order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(orderData),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.status === "success") {
-                console.log("Item saved!");
-              }
-            });
+          });
         });
 
         // Cart-ai clear panni redirect seiyavum
@@ -230,7 +236,7 @@
         sessionStorage.removeItem("checkoutCart");
 
         alert("Order Placed Successfully!");
-        window.location.href = "/success";
+        window.location.href = "/success"; // Inga redirect aagum podhu Summary page-la data theriyum
       }
     </script>
   </body>
