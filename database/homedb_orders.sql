@@ -21,35 +21,35 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'e0cb5ac4-f060-11f0-89df-7f841af27262:1-247';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'e0cb5ac4-f060-11f0-89df-7f841af27262:1-295';
 
 --
--- Table structure for table `product`
+-- Table structure for table `orders`
 --
 
-DROP TABLE IF EXISTS `product`;
+DROP TABLE IF EXISTS `orders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `product` (
+CREATE TABLE `orders` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `product_name` varchar(100) NOT NULL,
-  `category` varchar(100) NOT NULL,
-  `price` int NOT NULL,
-  `quantity` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `image` varchar(255) DEFAULT NULL,
+  `order_id` varchar(20) NOT NULL,
+  `user_id` int NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `qty` int NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `order_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `product`
+-- Dumping data for table `orders`
 --
 
-LOCK TABLES `product` WRITE;
-/*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (13,'biscuits','Grocery',10,50,'2026-01-24 10:18:47','biscuits.jpg'),(14,'Chips','Grocery',10,50,'2026-01-24 10:34:06','chips.jpeg'),(15,'chilli','Grocery',15,100,'2026-01-28 09:23:27','chilli.jpeg'),(16,'pen','Stationery',10,100,'2026-01-28 09:58:45','pen.jpg'),(17,'sugar','Grocery',50,100,'2026-01-28 09:59:10','sugar.jpg'),(18,'chocolate','Grocery',10,100,'2026-01-28 10:05:08','chocolate.jpg'),(20,'shampoo','Grocery',10,100,'2026-01-28 10:06:05','shampoo.jpg'),(21,'chips','Grocery',10,100,'2026-01-30 05:51:31','chips.jpeg');
-/*!40000 ALTER TABLE `product` ENABLE KEYS */;
+LOCK TABLES `orders` WRITE;
+/*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,'#INV-6116',19,'chilli',1,15.00,'2026-02-09 08:33:29'),(2,'#INV-8621',19,'biscuits',1,10.00,'2026-02-09 08:34:36'),(3,'#INV-8622',19,'Chips',1,10.00,'2026-02-09 08:44:00'),(4,'#INV-6710',23,'Tomato',1,20.00,'2026-02-09 09:36:11'),(5,'#INV-1759',17,'Potato',1,10.00,'2026-02-10 17:19:37'),(6,'#INV-8941',17,'Brinjal',1,20.00,'2026-02-14 09:27:33'),(7,'#INV-8941',17,'Brinjal',1,20.00,'2026-02-14 09:27:33'),(8,'#INV-8941',17,'Capsicum',2,30.00,'2026-02-14 09:27:33'),(9,'#INV-8353',17,'Brinjal',1,20.00,'2026-02-14 09:40:02'),(10,'#INV-8353',17,'chilli',1,15.00,'2026-02-14 09:40:02'),(11,'#INV-8353',17,'chilli',1,15.00,'2026-02-14 09:42:37'),(12,'#INV-8353',17,'Brinjal',1,20.00,'2026-02-14 09:42:37');
+/*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -62,4 +62,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-05 17:06:50
+-- Dump completed on 2026-02-18 16:15:27

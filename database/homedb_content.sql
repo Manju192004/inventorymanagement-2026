@@ -21,35 +21,35 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'e0cb5ac4-f060-11f0-89df-7f841af27262:1-247';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ 'e0cb5ac4-f060-11f0-89df-7f841af27262:1-295';
 
 --
--- Table structure for table `users`
+-- Table structure for table `content`
 --
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `content`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `users` (
+CREATE TABLE `content` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `fname` varchar(100) DEFAULT NULL,
-  `lname` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `phone` varchar(15) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL,
-  `role` varchar(20) DEFAULT 'user',
+  `Name` varchar(255) NOT NULL,
+  `Email` varchar(255) NOT NULL,
+  `Password` varchar(255) NOT NULL,
+  `Phone` varchar(20) DEFAULT NULL,
+  `Role` varchar(50) DEFAULT 'User',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `Email` (`Email`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `users`
+-- Dumping data for table `content`
 --
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+LOCK TABLES `content` WRITE;
+/*!40000 ALTER TABLE `content` DISABLE KEYS */;
+INSERT INTO `content` VALUES (1,'Admin User','admin@gmail.com','admin123',NULL,'Admin'),(3,'Manju seenivasan','manjuseenivasan07@gmail.com','admin123','9780654321','User'),(13,'Manju seenivasan','manjuseenivasan09@gmail.com','mmmmm','9780654321','User'),(15,'Manju seenivasan','manjuseenivasan08@gmail.com','mmmmm','9780654321','User'),(16,'Manju seenivasan','manjuseenivasan10@gmail.com','mmmmm','9780654321','User'),(17,'Akshaya Mayakannan','manju@gmail.com','123','9876543210','User'),(19,'thara shree','thara@gmail.com','123','9876543210','User'),(22,'shanmathy shanmathy','shan@gmail.com','12345','9087987654','User'),(23,'aru mugan','aru@gmail.com','123456','9942203285','User');
+/*!40000 ALTER TABLE `content` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -62,4 +62,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-05 17:06:49
+-- Dump completed on 2026-02-18 16:15:26
